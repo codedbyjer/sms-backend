@@ -39,7 +39,7 @@ const retrieveStudentById = async (req, res, next) => {
         const student = await fetchStudentById(id);
 
         if (!student) {
-            return res.status(404).json({ message: "This student doesn't exist!" });
+            return res.status(404).json({ message: "Student not found!" });
         };
 
         res.status(200).json({ student });
@@ -62,6 +62,8 @@ const updateStudent = async (req, res, next) => {
             mobile
         });
 
+        if (!updated) return res.status(404).json({ message: "Student not found!" })
+
         res.status(200).json({
             message: `${updated.firstName}'s data updated successfully!`,
             student: updated
@@ -80,6 +82,9 @@ const deleteStudent = async (req, res, next) => {
 
     try {
         const deleted = await deleteStudentById(id);
+
+        if (!deleted) return res.status(404).json({ message: "Student not found!" })
+
         res.status(200).json({
             message: `${deleted.firstName}'s data, deleted successfully!`,
             student: deleted

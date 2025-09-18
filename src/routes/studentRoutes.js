@@ -9,7 +9,7 @@ const { addStudent,
 } = require('../controllers/studentController')
 
 router.post("/create", authMiddleware, addStudent);
-router.get("/", authMiddleware, retrieveStudents);
+router.get("/all", authMiddleware, retrieveStudents);
 router.get("/:id", authMiddleware, retrieveStudentById);
 router.put("/update/:id", authMiddleware, updateStudent);
 router.delete("/delete/:id", authMiddleware, deleteStudent)
