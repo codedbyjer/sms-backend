@@ -24,7 +24,7 @@ const loginUser = async (email, password) => {
     const token = jwt.sign(
         { userId: user.userId, email: user.email },
         process.env.JWT_SECRET,
-        { expiresIn: "1m" }
+        { expiresIn: "1h" }
     );
 
     return { token, user };

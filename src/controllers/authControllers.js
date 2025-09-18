@@ -1,4 +1,3 @@
-const { user } = require('../config/prisma');
 const { registerUser, loginUser } = require('../services/authService');
 
 const register = async (req, res, next) => {
