@@ -5,14 +5,15 @@ const { addStudent,
     retrieveStudents,
     retrieveStudentById,
     updateStudent,
-    deleteStudent
+    deleteStudent,
 } = require('../controllers/studentController')
 
 router.post("/create", authMiddleware, addStudent);
-router.get("/all", authMiddleware, retrieveStudents);
+router.get("/", authMiddleware, retrieveStudents);
 router.get("/:id", authMiddleware, retrieveStudentById);
 router.put("/update/:id", authMiddleware, updateStudent);
-router.delete("/delete/:id", authMiddleware, deleteStudent)
+router.delete("/delete/:id", authMiddleware, deleteStudent);
+
 
 
 router.post("/registration", authMiddleware, (req, res) => {
