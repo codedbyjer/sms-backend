@@ -1,10 +1,39 @@
 const prisma = require('../config/prisma');
+const { normalizeStudentData } = require('../utils/normalizeStudentData')
 
 const createStudent = async (data) => {
-    const existing = await prisma.student.findUnique({
-        where: { email: data.email }
-    });
-    if (existing) throw new Error("Student email already exist!");
+    data = normalizeStudentData(data);
+
+    if (!data || Object.keys(data).length === 0) {
+        const error = new Error("No data provided for student creation.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const requiredFields = ['prefix', 'firstName', 'lastName', 'email', 'mobile'];
+    const missingFields = requiredFields.filter(f => !data[f] || !data[f].toString().trim());
+    if (missingFields.length > 0) {
+        const error = new Error(`Missing required fields: ${missingFields.join(', ')}`);
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if (data.email) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+            const error = new Error("Invalid email format.");
+            error.statusCode = 400;
+            throw error;
+        }
+
+        const emailExist = await prisma.student.findUnique({
+            where: { email: data.email }
+        });
+        if (emailExist) {
+            const error = new Error("Student email already exist!");
+            error.statusCode = 400;
+            throw error;
+        }
+    }
 
     return await prisma.student.create({ data });
 }
@@ -62,25 +91,57 @@ const fetchAllStudent = async (search, page = 1, limit = 10, sortBy = "createdAt
 
 
 const fetchStudentById = async (id) => {
-    return await prisma.student.findUnique({
+    const student = await prisma.student.findUnique({
         where: { studentId: Number(id) }
-    })
+    });
+
+    if (!student) {
+        const error = new Error("Student not found with the provided ID.");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return student;
 };
 
 
 const updateStudentById = async (id, data) => {
-    const existing = await fetchStudentById(id);
+    data = normalizeStudentData(data);
 
-    if (!existing) return null;
+    if (!data || Object.keys(data).length === 0) {
+        const error = new Error("No fields provided for the update.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const allowedFields = ['prefix', 'firstName', 'lastName', 'email', 'mobile'];
+    const invalidFields = Object.keys(data).filter(f => !allowedFields.includes(f));
+    if (invalidFields.length > 0) {
+        const error = new Error(`Invalid fields in update: ${invalidFields.join(', ')}`);
+        error.statusCode = 400;
+        throw error;
+    }
 
     if (data.email) {
-        const emailExist = await prisma.student.findFirst({
-            where: { email: data.email }
-        });
-
-        if (emailExist && emailExist.studentId !== Number(id)) {
-            throw new Error("Student email already exist!");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+            const error = new Error("Invalid email format.");
+            error.statusCode = 400;
+            throw error;
         }
+
+        const emailExist = await prisma.student.findFirst({
+            where: {
+                email: data.email,
+                NOT: { studentId: Number(id) }
+            },
+
+        });
+        if (emailExist) {
+            const error = new Error("Email already in use by another student.");
+            error.statusCode = 400;
+            throw error;
+        }
+
     }
 
     return await prisma.student.update({
@@ -90,13 +151,20 @@ const updateStudentById = async (id, data) => {
 
 };
 
-const deleteStudentById = async (id) => {
-    const existing = await fetchStudentById(id);
 
-    if (!existing) return null;
+const deleteStudentById = async (id) => {
+    const student = await prisma.student.findUnique({
+        where: { studentId: Number(id) }
+    })
+
+    if (!student) {
+        const error = new Error("Student not found with the provided ID.");
+        error.statusCode = 404;
+        throw error;
+    }
 
     return await prisma.student.delete({
-        where: { studentId: Number(id) }
+        where: ({ studentId: Number(id) })
     })
 };
 

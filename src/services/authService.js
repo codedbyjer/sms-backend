@@ -3,23 +3,49 @@ const jwt = require('jsonwebtoken');
 const prisma = require('../config/prisma');
 
 const registerUser = async (email, password) => {
+    if (!email || !password) {
+        const error = new Error("Email and password are required.");
+        error.statusCode = 400;
+        throw error;
+    }
     const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) throw new Error("Email already exist");
+    if (existing) {
+        const error = new Error("Email already registered.");
+        error.statusCode = 400;
+        throw error;
+
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return prisma.user.create({
+    const user = await prisma.user.create({
         data: { email, password: hashedPassword },
 
     })
+
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
 };
 
 
 const loginUser = async (email, password) => {
+    if (!email || !password) {
+        const error = new Error("Email and password are required.");
+        error.statusCode = 400;
+        throw error;
+    }
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) throw new Error("Invalid credentials");
+    if (!user) {
+        const error = new Error("Invalid credentials.");
+        error.statusCode = 401;
+        throw error;
+    }
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new Error("Invalid Password!");
+    if (!match) {
+        const error = new Error("Invalid credentials.");
+        error.statusCode = 401;
+        throw error;
+    }
 
     const token = jwt.sign(
         { userId: user.userId, email: user.email },
@@ -27,7 +53,9 @@ const loginUser = async (email, password) => {
         { expiresIn: "1h" }
     );
 
-    return { token, user };
+    const { password: _, ...safeUser } = user;
+
+    return { token, safeUser };
 
 };
 
