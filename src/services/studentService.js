@@ -29,7 +29,7 @@ const createStudent = async (data) => {
             where: { email: data.email }
         });
         if (emailExist) {
-            const error = new Error("Student email already exist!");
+            const error = new Error("Email already in use by another student!");
             error.statusCode = 400;
             throw error;
         }
@@ -115,6 +115,13 @@ const updateStudentById = async (id, data) => {
     }
 
     const allowedFields = ['prefix', 'firstName', 'lastName', 'email', 'mobile'];
+
+    Object.keys(data).forEach(key => {
+        if (typeof data[key] === 'string' && data[key].trim() === '') {
+            delete data[key];
+        }
+    });
+
     const invalidFields = Object.keys(data).filter(f => !allowedFields.includes(f));
     if (invalidFields.length > 0) {
         const error = new Error(`Invalid fields in update: ${invalidFields.join(', ')}`);
