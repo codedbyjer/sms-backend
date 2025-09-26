@@ -23,7 +23,13 @@ const retrieveStudents = async (req, res, next) => {
         const { search, page = 1, limit = 10, sortBy = 'createdAt', order = 'desc' } = req.query;
         const students = await fetchAllStudent(search, page, limit, sortBy, order);
 
-        if (students.total === 0) {
+        if (page > students.totalPages) {
+            const error = new Error(`Page ${page} does not exist. There are only ${students.totalPages} pages available.`);
+            error.statusCode = 404;
+            throw error;
+        }
+
+        if (!search && students.total === 0) {
             const error = new Error("No students found.");
             error.statusCode = 404;
             throw error;
@@ -35,11 +41,6 @@ const retrieveStudents = async (req, res, next) => {
             throw error;
         }
 
-        if (page > students.totalPages) {
-            const error = new Error(`Page ${page} does not exist. There are only ${students.totalPages} pages available.`);
-            error.statusCode = 404;
-            throw error;
-        }
 
         return successResponse(res, 200, "Students retieved successfully!", students);
     } catch (err) {
