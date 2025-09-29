@@ -27,9 +27,7 @@ const login = async (req, res, next) => {
             res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
         }
 
-        res.json({ accessToken, user })
-
-        return successResponse(res, 200, "Login Successfully!", { token, user });
+        return successResponse(res, 200, "Login Successfully!", { accessToken, user });
     } catch (err) {
         next(err);
     }
