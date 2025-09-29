@@ -1,21 +1,23 @@
 const normalizeStudentData = (data) => {
-    if (data.prefix && typeof data.prefix === 'string') {
-        data.prefix = data.prefix.trim();
+    const normalized = { ...data }
+
+    if (normalized.prefix && typeof normalized.prefix === 'string') {
+        normalized.prefix = normalized.prefix.trim();
     }
-    if (data.firstName && typeof data.firstName === 'string') {
-        data.firstName = data.firstName.trim();
+    if (normalized.firstName && typeof normalized.firstName === 'string') {
+        normalized.firstName = normalized.firstName.trim();
     }
-    if (data.lastName && typeof data.lastName === 'string') {
-        data.lastName = data.lastName.trim();
+    if (normalized.lastName && typeof normalized.lastName === 'string') {
+        normalized.lastName = normalized.lastName.trim();
     }
-    if (data.email && typeof data.email === 'string') {
-        data.email = data.email.trim().toLowerCase();
+    if (normalized.email && typeof normalized.email === 'string') {
+        normalized.email = normalized.email.trim().toLowerCase();
     }
-    if (data.mobile && typeof data.mobile === 'string') {
-        data.mobile = data.mobile.trim();
+    if (normalized.mobile && typeof normalized.mobile === 'string') {
+        normalized.mobile = normalized.mobile.trim();
     }
 
-    return data;
+    return normalized;
 }
 
 module.exports = { normalizeStudentData };
