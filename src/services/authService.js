@@ -54,7 +54,7 @@ const loginUser = async (email, password, rememberMe = false) => {
     const accessToken = jwt.sign(
         { userId: user.userId, email: user.email },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "15m" }
     );
 
     let rawRefreshToken = null;
@@ -126,7 +126,7 @@ const rotateRefreshToken = async (rawToken) => {
     const newAccessToken = jwt.sign(
         { userId: user.userId, email: user.email },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "15m" }
     );
 
     return { accessToken: newAccessToken, refreshToken: newRawToken, userId: storedToken.userId };
