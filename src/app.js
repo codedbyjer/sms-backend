@@ -9,15 +9,19 @@ const cookieParser = require('cookie-parser');
 const app = express();
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true,
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-app.use('/api/auth', authRoutes);
+app.use('/api/', (req, res) => {
+    res.json({ message: "Welcome to Student Management Sytem API!" });
+});
 
+app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 
 app.use(errorHandler);

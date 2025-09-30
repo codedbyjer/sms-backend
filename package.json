@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "cross-env NODE_ENV=production node src/server.js",
+    "dev": "cross-env NODE_ENV=development nodemon src/server.js",
+    "build:dev": "cross-env NODE_ENV=development npx prisma generate",
+    "build:prod": "cross-env NODE_ENV=production npx prisma migrate deploy",
+    "studio:dev": "cross-env NODE_ENV=development npx prisma studio",
+    "studio:prod": "cross-env NODE_ENV=production npx prisma studio",
+    "postinstall": "npx prisma generate && npx prisma migrate deploy"
   },
   "repository": {
     "type": "git",
@@ -22,6 +28,7 @@
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
