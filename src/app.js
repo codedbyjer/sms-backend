@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-app.use('/', (req, res) => {
+app.get('/', (req, res) => {
     res.json({ message: "Welcome to Student Management Sytem API!" });
 });
 
