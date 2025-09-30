@@ -17,12 +17,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-app.use('/api', (req, res) => {
+app.use('/', (req, res) => {
     res.json({ message: "Welcome to Student Management Sytem API!" });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/students', studentRoutes);
+app.use('/auth', authRoutes);
+app.use('/students', studentRoutes);
 
 app.use(errorHandler);
 
