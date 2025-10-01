@@ -6,7 +6,7 @@
     "start": "cross-env NODE_ENV=production node src/server.js",
     "dev": "cross-env NODE_ENV=development nodemon src/server.js",
     "build:dev": "cross-env NODE_ENV=development npx prisma generate",
-    "build:prod": "cross-env NODE_ENV=production npx prisma migrate deploy",
+    "migrate:prod": "cross-env NODE_ENV=production npx prisma migrate deploy",
     "studio:dev": "cross-env NODE_ENV=development npx prisma studio",
     "studio:prod": "cross-env NODE_ENV=production npx prisma studio",
     "postinstall": "npx prisma generate && npx prisma migrate deploy"
