@@ -9,8 +9,8 @@ const COOKIE_OPTIONS = {
 }
 const register = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
-        const user = await registerUser(email, password);
+        const { email, password, firstName, lastName } = req.body;
+        const user = await registerUser(email, password, firstName, lastName);
         return successResponse(res, 201, "User Registered Successfully!", user);
     } catch (err) {
         next(err);

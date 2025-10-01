@@ -18,6 +18,8 @@ model User {
   userId    Int      @id @default(autoincrement())
   email     String   @unique
   password  String
+  firstName String
+  lastName  String
   createdAt DateTime @default(now())
 
   refreshTokens RefreshToken[]
@@ -25,7 +27,7 @@ model User {
 
 model Student {
   studentId Int      @id @default(autoincrement())
-  prefix    String?
+  prefix    String
   firstName String
   lastName  String
   mobile    String

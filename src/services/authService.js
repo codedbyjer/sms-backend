@@ -6,12 +6,19 @@ const { generateSecureRandomToken, hashToken } = require('../utils/token');
 const REFRESH_DAYS = parseInt(process.env.REFRESH_TOKEN_EXPIRES_DAYS || '7', 10);
 const REFRESH_EXPIRY_MS = REFRESH_DAYS * 24 * 60 * 60 * 1000;
 
-const registerUser = async (email, password) => {
+const registerUser = async (email, password, firstName, lastName) => {
     if (!email || !password) {
         const error = new Error("Email and password are required.");
         error.statusCode = 400;
         throw error;
     }
+
+    if (!firstName && !lastName) {
+        const error = new Error("First name and last name are required!");
+        error.statusCode = 400;
+        throw error;
+    }
+
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
         const error = new Error("Email already registered.");
@@ -22,7 +29,7 @@ const registerUser = async (email, password) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-        data: { email, password: hashedPassword },
+        data: { email, password: hashedPassword, firstName, lastName },
 
     })
 
