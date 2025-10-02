@@ -42,6 +42,8 @@ model Student {
   email        String   @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([createdAt])
 }
 
 model RefreshToken {
@@ -52,4 +54,8 @@ model RefreshToken {
   createdAt      DateTime @default(now())
   expiresAt      DateTime
   revoked        Boolean  @default(false)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revoked, expiresAt])
 }
