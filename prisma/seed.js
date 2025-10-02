@@ -1,6 +1,7 @@
 const { PrismaClient } = require('../generated/prisma');
 const bcrypt = require('bcrypt');
 const { faker } = require('@faker-js/faker');
+const morgan = require('morgan');
 
 const prisma = new PrismaClient();
 
@@ -25,14 +26,16 @@ async function runSeeder() {
 
     console.log('Created admin user (admin@gmail.com / admin123');
 
-    const prefixes = ['Mr.', 'Ms.', 'Dr.'];
+    const prefixes = ['MR', 'MS', 'DR', 'OTHER'];
 
     let createdStudent = 0
 
     for (createdStudent; createdStudent < 50; createdStudent++) {
+        const selectedPrefix = faker.helpers.arrayElement(prefixes)
         await prisma.student.create({
             data: {
-                prefix: faker.helpers.arrayElement(prefixes),
+                prefix: selectedPrefix,
+                customPrefix: selectedPrefix === 'OTHER' ? faker.person.prefix() : null,
                 firstName: faker.person.firstName(),
                 lastName: faker.person.lastName(),
                 mobile: faker.phone.number('09#########'),

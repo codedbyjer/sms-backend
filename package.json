@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "cross-env NODE_ENV=development node prisma/seed.js"
   },
   "scripts": {
     "start": "cross-env NODE_ENV=production node src/server.js",
@@ -13,9 +13,9 @@
     "studio:dev": "cross-env NODE_ENV=development npx prisma studio",
     "studio:prod": "cross-env NODE_ENV=production npx prisma studio",
     "postinstall": "npx prisma generate && npx prisma migrate deploy",
-    "seed": "node prisma/seed.js",
-    "db:reset": "npx prisma migrate reset",
-    "db:seed": "npx prisma db seed"
+    "seed": "cross-env NODE_ENV=development node prisma/seed.js",
+    "db:reset": "cross-env NODE_ENV=development npx prisma migrate reset",
+    "db:seed": "cross-env NODE_ENV=development npx prisma db seed"
   },
   "repository": {
     "type": "git",
