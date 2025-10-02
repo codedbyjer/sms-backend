@@ -41,7 +41,10 @@ const refresh = async (req, res, next) => {
 
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
-        return res.json({ accessToken, userId })
+        return successResponse(res, 200, "Token refreshed successfully", {
+            accessToken,
+            userId
+        })
 
     } catch (error) {
         next(error);
@@ -54,7 +57,7 @@ const logout = async (req, res, next) => {
         const token = req.cookies.refreshToken;
         await revokeRefreshToken(token);
         res.clearCookie('refreshToken');
-        return res.json({ message: 'Logged out successfully!' })
+        return successResponse(res, 200, "Logged out successfully!")
     } catch (error) {
         next(error);
     }

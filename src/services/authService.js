@@ -2,7 +2,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../config/prisma');
 const { generateSecureRandomToken, hashToken } = require('../utils/token');
+const { validatePassword } = require('../middlewares/validate')
 
+const BCRYPT_ROUNDS = 10;
+const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_DAYS = parseInt(process.env.REFRESH_TOKEN_EXPIRES_DAYS || '7', 10);
 const REFRESH_EXPIRY_MS = REFRESH_DAYS * 24 * 60 * 60 * 1000;
 
@@ -19,6 +22,10 @@ const registerUser = async (email, password, firstName, lastName) => {
         throw error;
     }
 
+    if (password) {
+        validatePassword(password);
+    }
+
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
         const error = new Error("Email already registered.");
@@ -27,7 +34,7 @@ const registerUser = async (email, password, firstName, lastName) => {
 
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
     const user = await prisma.user.create({
         data: { email, password: hashedPassword, firstName, lastName },
 
@@ -61,7 +68,7 @@ const loginUser = async (email, password, rememberMe = false) => {
     const accessToken = jwt.sign(
         { userId: user.userId, email: user.email },
         process.env.JWT_SECRET,
-        { expiresIn: "15m" }
+        { expiresIn: ACCESS_TOKEN_EXPIRY }
     );
 
     let rawRefreshToken = null;
@@ -133,7 +140,7 @@ const rotateRefreshToken = async (rawToken) => {
     const newAccessToken = jwt.sign(
         { userId: user.userId, email: user.email },
         process.env.JWT_SECRET,
-        { expiresIn: "15m" }
+        { expiresIn: ACCESS_TOKEN_EXPIRY }
     );
 
     return { accessToken: newAccessToken, refreshToken: newRawToken, userId: storedToken.userId };

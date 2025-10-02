@@ -1,5 +1,6 @@
 const prisma = require('../config/prisma');
-const { normalizeStudentData } = require('../utils/normalizeStudentData')
+const { normalizeStudentData } = require('../utils/normalizeStudentData');
+const { validateMobile, validatePrefix } = require('../middlewares/validate');
 
 const createStudent = async (data) => {
     data = normalizeStudentData(data);
@@ -8,6 +9,11 @@ const createStudent = async (data) => {
         const error = new Error("No data provided for student creation.");
         error.statusCode = 400;
         throw error;
+    }
+
+    if (data.prefix) {
+        data.prefix = data.prefix.toUpperCase();
+        validatePrefix(data.prefix, data.customPrefix)
     }
 
     const requiredFields = ['prefix', 'firstName', 'lastName', 'email', 'mobile'];
@@ -33,6 +39,10 @@ const createStudent = async (data) => {
             error.statusCode = 400;
             throw error;
         }
+    }
+
+    if (data.mobile) {
+        validateMobile(data.mobile);
     }
 
     return await prisma.student.create({ data });
@@ -114,7 +124,7 @@ const updateStudentById = async (id, data) => {
         throw error;
     }
 
-    const allowedFields = ['prefix', 'firstName', 'lastName', 'email', 'mobile'];
+    const allowedFields = ['prefix', 'customPrefix', 'firstName', 'lastName', 'email', 'mobile'];
 
     Object.keys(data).forEach(key => {
         if (typeof data[key] === 'string' && data[key].trim() === '') {
@@ -149,6 +159,15 @@ const updateStudentById = async (id, data) => {
             throw error;
         }
 
+    }
+
+    if (data.mobile) {
+        validateMobile(data.mobile);
+    }
+
+    if (data.prefix) {
+        data.prefix = data.prefix.toUpperCase()
+        validatePrefix(data.prefix, data.customPrefix);
     }
 
     return await prisma.student.update({
