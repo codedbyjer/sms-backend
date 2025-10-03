@@ -5,7 +5,7 @@ const {
     updateStudentById,
     deleteStudentById,
 } = require('../services/studentService');
-const validateIdParams = require('../middlewares/validate');
+const { validateIdParams } = require('../middlewares/validate');
 const { successResponse } = require('../utils/response')
 
 const addStudent = async (req, res, next) => {
