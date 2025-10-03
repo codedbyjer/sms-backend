@@ -11,7 +11,7 @@ const app = express();
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 5,
+    max: 10,
     message: {
         success: false,
         statusCode: 429,
