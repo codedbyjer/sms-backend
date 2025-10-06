@@ -50,14 +50,22 @@ const validateMobile = (mobile) => {
 const VALID_PREFIXES = ['MR', 'MS', 'DR', 'OTHER'];
 
 const validatePrefix = (prefix, customPrefix) => {
-    if (!VALID_PREFIXES.includes(prefix?.toUpperCase())) {
+    const upperPrefix = prefix.toUpperCase();
+
+    if (!VALID_PREFIXES.includes(upperPrefix)) {
         const error = new Error(`Invalid prefix. Must be one of: ${VALID_PREFIXES.join(', ')}`);
         error.statusCode = 400;
         throw error;
     }
 
-    if (prefix.toUpperCase() === 'OTHER' && !customPrefix?.trim()) {
+    if (upperPrefix === 'OTHER' && !customPrefix?.trim()) {
         const error = new Error("customPrefix is required when prefic is 'OTHER'.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if (upperPrefix !== 'OTHER' && customPrefix?.trim()) {
+        const error = new Error("customPrefix should only be provided when prefix is 'OTHER'.");
         error.statusCode = 400;
         throw error;
     }

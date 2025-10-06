@@ -15,7 +15,7 @@ const authLimiter = rateLimit({
     message: {
         success: false,
         statusCode: 429,
-        message: "Too many login attempts. Please try again later."
+        message: "Too many attempts. Please try again later."
     },
 
     standardHeaders: true,

@@ -5,6 +5,11 @@ const morgan = require('morgan');
 
 const prisma = new PrismaClient();
 
+const generatePhilMobileNo = () => {
+    const randomDigits = Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
+    return `09${randomDigits}`;
+}
+
 async function runSeeder() {
     if (process.env.NODE_ENV === 'production') {
         console.log('Skipping seed in production environment');
@@ -38,12 +43,11 @@ async function runSeeder() {
                 customPrefix: selectedPrefix === 'OTHER' ? faker.person.prefix() : null,
                 firstName: faker.person.firstName(),
                 lastName: faker.person.lastName(),
-                mobile: faker.phone.number('09#########'),
+                mobile: generatePhilMobileNo(),
                 email: faker.internet.email().toLowerCase()
             }
         });
     }
-
 
     console.log(`Created ${createdStudent} with random data`);
     console.log('Seeding completed!');

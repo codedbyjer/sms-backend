@@ -149,13 +149,25 @@ const rotateRefreshToken = async (rawToken) => {
 
 
 const revokeRefreshToken = async (rawToken) => {
-    if (!rawToken) return;
+    if (!rawToken) {
+        const error = new Error("No active session to logged out.");
+        error.statusCode = 400;
+        throw error;
+    };
     const hashedToken = await hashToken(rawToken);
 
-    await prisma.refreshToken.updateMany({
+    const result = await prisma.refreshToken.updateMany({
         where: { token: hashedToken, revoked: false },
         data: { revoked: true }
     })
+
+    if (result.count === 0) {
+        const error = new Error("No active session found or already logged out!");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    return result;
 }
 
 
