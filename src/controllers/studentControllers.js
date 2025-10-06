@@ -23,10 +23,16 @@ const retrieveStudents = async (req, res, next) => {
         const { search, page = 1, limit = 10, sortBy = 'createdAt', order = 'desc' } = req.query;
         const students = await fetchAllStudent(search, page, limit, sortBy, order);
 
-        if (!search && students.total === 0) {
-            const error = new Error("No students found.");
-            error.statusCode = 404;
-            throw error;
+        if (students.total === 0) {
+            if (search) {
+                const error = new Error(`No student matches the search term: "${search}".`);
+                error.statusCode = 404;
+                throw error;
+            } else {
+                const error = new Error("No students found.");
+                error.statusCode = 404;
+                throw error;
+            }
         }
 
         if (page > students.totalPages) {
@@ -34,13 +40,6 @@ const retrieveStudents = async (req, res, next) => {
             error.statusCode = 404;
             throw error;
         }
-
-        if (search && students.students.length === 0) {
-            const error = new Error(`No student matches the search term: "${search}".`);
-            error.statusCode = 404;
-            throw error;
-        }
-
 
         return successResponse(res, 200, "Students retieved successfully!", students);
     } catch (err) {

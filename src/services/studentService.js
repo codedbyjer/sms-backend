@@ -34,6 +34,7 @@ const createStudent = async (data) => {
         const emailExist = await prisma.student.findUnique({
             where: { email: data.email }
         });
+
         if (emailExist) {
             const error = new Error("Email already in use by another student!");
             error.statusCode = 400;
